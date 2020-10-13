@@ -1,0 +1,66 @@
+{
+  "version": "0.1.0",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "scripts": {
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test",
+    "lint": "tsdx lint",
+    "prepare": "tsdx build",
+    "size": "size-limit",
+    "analyze": "size-limit --why",
+    "clear": "jest --clearCache"
+  },
+  "peerDependencies": {},
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "name": "cypress-graphql-mock",
+  "author": "warren",
+  "module": "dist/cypress-graphql-mock.esm.js",
+  "size-limit": [
+    {
+      "path": "dist/cypress-graphql-mock.cjs.production.min.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "dist/cypress-graphql-mock.esm.js",
+      "limit": "10 KB"
+    }
+  ],
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^4.6.0",
+    "axios": "^0.20.0",
+    "graphql-scalars": "^1.4.0",
+    "graphql-tag": "^2.11.0",
+    "husky": "^4.3.0",
+    "size-limit": "^4.6.0",
+    "tsdx": "^0.14.0",
+    "tslib": "^2.0.3",
+    "typescript": "^4.0.3"
+  },
+  "dependencies": {
+    "@graphql-tools/schema": "^6.2.4",
+    "apollo-server": "^2.18.2",
+    "graphql": "^15.3.0",
+    "graphql-tools": "^6.2.4",
+    "msw": "^0.21.2"
+  }
+}
