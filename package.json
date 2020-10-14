@@ -32,16 +32,16 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "graphql-mock-server",
+  "name": "graphql-network-mock",
   "author": "warren",
-  "module": "dist/graphql-mock-server.esm.js",
+  "module": "dist/graphql-network-mock.esm.js",
   "size-limit": [
     {
-      "path": "dist/graphql-mock-server.cjs.production.min.js",
+      "path": "dist/graphql-network-mock.cjs.production.min.js",
       "limit": "10 KB"
     },
     {
-      "path": "dist/graphql-mock-server.esm.js",
+      "path": "dist/graphql-network-mock.esm.js",
       "limit": "10 KB"
     }
   ],
