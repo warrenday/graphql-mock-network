@@ -15,7 +15,7 @@ By combining a graphql mock server with MSW you can achieve simple auto-mocking 
 GraphQL Network Mock provides:
 
 * Network level mocking
-* Auto mock against a graphql schema
+* Auto-mocking against a graphql schema
 * Manual mocking for individual tests
 
 ## Installing
