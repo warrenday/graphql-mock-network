@@ -1,5 +1,4 @@
-import { IMocks } from 'apollo-server';
-import { mergeResolvers } from 'graphql-tools';
+import { mergeResolvers, IMocks } from 'graphql-tools';
 
 const executeTopLevelMock = (mock: IMocks) => {
   let executedMocks: Record<string, {}> = {};

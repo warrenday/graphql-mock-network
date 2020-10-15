@@ -1,6 +1,6 @@
 import path from 'path';
 import axios from 'axios';
-import { MockServer } from './index';
+import { MockNetwork } from './index';
 
 const networkRequest = (query: string) => {
   return axios.post(
@@ -17,8 +17,8 @@ const networkRequest = (query: string) => {
   );
 };
 
-const createNewMockServer = () => {
-  const mockServer = new MockServer({
+const createNewMockNetwork = () => {
+  const mockNetwork = new MockNetwork({
     schemaPath,
     mocks: {
       Query: () => ({
@@ -29,22 +29,22 @@ const createNewMockServer = () => {
       }),
     },
   });
-  mockServer.listen();
+  mockNetwork.listen();
 
-  return mockServer;
+  return mockNetwork;
 };
 
 const schemaPath = path.resolve(__dirname, '../introspection.schema.graphql');
 
-describe('MockServer', () => {
-  let mockServer: MockServer;
+describe('MockNetwork', () => {
+  let mockNetwork: MockNetwork;
   beforeEach(() => {
-    mockServer = createNewMockServer();
+    mockNetwork = createNewMockNetwork();
   });
 
   afterEach(() => {
-    if (mockServer) {
-      mockServer.close();
+    if (mockNetwork) {
+      mockNetwork.close();
     }
   });
 
@@ -69,7 +69,7 @@ describe('MockServer', () => {
   });
 
   it('adds addition mocks', async () => {
-    mockServer.addMocks({
+    mockNetwork.addMocks({
       Query: () => ({
         photo: () => ({
           id: 'abc',
@@ -98,7 +98,7 @@ describe('MockServer', () => {
   });
 
   it('preserves previous mocks when adding new mocks', async () => {
-    mockServer.addMocks({
+    mockNetwork.addMocks({
       Query: () => ({
         photo: () => ({
           id: 'abc',
@@ -127,7 +127,7 @@ describe('MockServer', () => {
   });
 
   it('resets mocks back to state when originally instantiated', async () => {
-    mockServer.addMocks({
+    mockNetwork.addMocks({
       Query: () => ({
         photo: () => ({
           id: 'abc',
@@ -135,7 +135,7 @@ describe('MockServer', () => {
         }),
       }),
     });
-    mockServer.resetMocks();
+    mockNetwork.resetMocks();
 
     const res1 = await networkRequest(`
       query photo($id: ID!) {
