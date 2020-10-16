@@ -41,6 +41,39 @@ const mockNetwork = new MockNetwork({
 });
 
 mockNetwork.start();
+
+// Now when making a network request. The data will be mocked.
+
+const res = await axios.post(
+  '/graphql',
+  {
+    query: `
+      query todo($id: ID!) {
+        todo(id: $id) {
+          id
+          title
+        }
+      }
+    `,
+    variables: {
+      id: 1,
+    },
+  },
+  {
+    headers: { 'Content-Type': 'application/json' },
+  }
+);
+
+console.log(res.data);
+
+// {
+//   data: {
+//     todo: {
+//       id: 'xyz',
+//       title: 'I am a manually mocked todo!',
+//     },
+//   }
+// }
 ```
 
 ## Browser Usage (Important)
