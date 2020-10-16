@@ -1,6 +1,12 @@
+import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
 import { MockNetwork } from './index';
+
+const schema = fs.readFileSync(
+  path.resolve(__dirname, '../introspection.schema.graphql'),
+  'utf8'
+);
 
 const networkRequest = (query: string) => {
   return axios.post(
@@ -17,35 +23,29 @@ const networkRequest = (query: string) => {
   );
 };
 
-const createNewMockNetwork = () => {
-  const mockNetwork = new MockNetwork({
-    schemaPath,
-    mocks: {
-      Query: () => ({
-        todo: () => ({
-          id: 'xyz',
-          title: 'I am a manually mocked todo!',
-        }),
+const mockNetwork = new MockNetwork({
+  schema,
+  mocks: {
+    Query: () => ({
+      todo: () => ({
+        id: 'xyz',
+        title: 'I am a manually mocked todo!',
       }),
-    },
-  });
-  mockNetwork.listen();
-
-  return mockNetwork;
-};
-
-const schemaPath = path.resolve(__dirname, '../introspection.schema.graphql');
+    }),
+  },
+});
 
 describe('MockNetwork', () => {
-  let mockNetwork: MockNetwork;
   beforeEach(() => {
-    mockNetwork = createNewMockNetwork();
+    mockNetwork.resetMocks();
   });
 
-  afterEach(() => {
-    if (mockNetwork) {
-      mockNetwork.close();
-    }
+  beforeAll(() => {
+    mockNetwork.start();
+  });
+
+  afterAll(() => {
+    mockNetwork.stop();
   });
 
   it('mocks a request', async () => {
@@ -154,6 +154,41 @@ describe('MockNetwork', () => {
         },
       },
     });
+
+    const res2 = await networkRequest(`
+      query todo($id: ID!) {
+        todo(id: $id) {
+          id
+          title
+        }
+      }
+    `);
+
+    expect(res2.data).toEqual({
+      data: {
+        todo: {
+          id: 'xyz',
+          title: 'I am a manually mocked todo!',
+        },
+      },
+    });
+  });
+
+  it('can stop and restart', async () => {
+    mockNetwork.stop();
+
+    await expect(
+      networkRequest(`
+        query todo($id: ID!) {
+          todo(id: $id) {
+            id
+            title
+          }
+        }
+      `)
+    ).rejects.toThrow(Error);
+
+    mockNetwork.start();
 
     const res2 = await networkRequest(`
       query todo($id: ID!) {

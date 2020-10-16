@@ -1,58 +1,48 @@
 import { IMocks, IMockServer } from 'graphql-tools';
-import {
-  createMockHandler,
-  HandleRequest,
-  HandlerResponse,
-} from './utils/createMockHandler';
+import { createMockHandler, HandleRequest } from './utils/createMockHandler';
 import { createMockServer } from './createMockServer';
 import { mergeMocks } from './utils/mergeMocks';
-import { setupWorker } from './utils/setupWorker';
-
-export type Worker = (
-  handlers: HandlerResponse
-) => {
-  listen: () => void;
-  close: () => void;
-};
+import { setupWorker, Worker } from './utils/setupWorker';
 
 export type MockNetworkArgs = {
-  schemaPath: string;
+  schema: string;
   mocks: IMocks;
 };
 
 export class MockNetwork {
-  public mockServer: IMockServer;
-  public worker: ReturnType<Worker>;
-  public schemaPath: string;
-  public mocks: IMocks;
-  public defaultMocks: IMocks;
+  private mockServer: IMockServer;
+  private worker: Worker;
+  private schema: string;
+  private mocks: IMocks;
+  private defaultMocks: IMocks;
 
-  constructor({ schemaPath, mocks = {} }: MockNetworkArgs) {
-    this.mockServer = createMockServer({ schemaPath, mocks });
+  constructor({ schema, mocks = {} }: MockNetworkArgs) {
+    this.mockServer = createMockServer({ schema, mocks });
     this.defaultMocks = mocks;
     this.mocks = mocks;
-    this.schemaPath = schemaPath;
+    this.schema = schema;
     this.worker = setupWorker(createMockHandler(this.handleRequest));
   }
 
-  public recreateMockServer(newMocks: IMocks) {
+  private recreateMockServer(newMocks: IMocks) {
     this.mocks = newMocks;
     this.mockServer = createMockServer({
-      schemaPath: this.schemaPath,
+      schema: this.schema,
       mocks: this.mocks,
     });
   }
 
-  public handleRequest: HandleRequest = (query, variables) => {
+  private handleRequest: HandleRequest = (query, variables) => {
     return this.mockServer.query(query, variables);
   };
 
-  listen() {
-    return this.worker.listen();
+  start() {
+    this.worker.start();
   }
 
-  close() {
-    return this.worker.close();
+  stop() {
+    this.worker.stop();
+    this.worker = setupWorker(createMockHandler(this.handleRequest));
   }
 
   addMocks(mocks: IMocks) {

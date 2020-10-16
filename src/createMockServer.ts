@@ -1,9 +1,8 @@
-import fs from 'fs';
 import { buildClientSchema, IntrospectionQuery, GraphQLSchema } from 'graphql';
 import { mockServer, IMockServer, IMocks } from 'graphql-tools';
 
 type CreateMockServerArgs = {
-  schemaPath: string;
+  schema: string;
   mocks?: IMocks;
 };
 
@@ -26,10 +25,9 @@ const getGraphqlSchema = (schemaString: string): GraphQLSchema => {
 };
 
 export const createMockServer = ({
-  schemaPath,
+  schema,
   mocks = {},
 }: CreateMockServerArgs): IMockServer => {
-  const schemaString = fs.readFileSync(schemaPath, 'utf8');
-  const schema = getGraphqlSchema(schemaString);
-  return mockServer(schema, mocks);
+  const clientSchema = getGraphqlSchema(schema);
+  return mockServer(clientSchema, mocks);
 };

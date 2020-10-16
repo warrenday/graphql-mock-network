@@ -25,7 +25,6 @@ export const createMockHandler = (
     }
 
     const payload = await handleRequest(body.query, req.variables);
-
     return res(ctx.data(payload.data));
   });
 

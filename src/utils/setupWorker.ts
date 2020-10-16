@@ -1,8 +1,8 @@
 import { HandlerResponse } from './createMockHandler';
 
-type Worker = {
-  listen: () => void;
-  close: () => void;
+export type Worker = {
+  start: () => void;
+  stop: () => void;
 };
 
 const IS_NODE = typeof window === 'undefined' || typeof process === 'object';
@@ -10,14 +10,14 @@ const IS_NODE = typeof window === 'undefined' || typeof process === 'object';
 export const setupWorker = (handlers: HandlerResponse): Worker => {
   if (IS_NODE) {
     const { setupServer } = require('msw/node');
-    return setupServer(handlers);
-  } else {
-    const { setupWorker } = require('msw');
-    const worker = setupWorker();
+    const server = setupServer(handlers);
 
     return {
-      listen: () => worker.start(),
-      close: () => worker.stop(),
+      start: () => server.listen(),
+      stop: () => server.close(),
     };
+  } else {
+    const { setupWorker } = require('msw');
+    return setupWorker(handlers);
   }
 };

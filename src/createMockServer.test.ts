@@ -1,18 +1,22 @@
+import fs from 'fs';
 import path from 'path';
 import { createMockServer } from './createMockServer';
 
-const schemaPath = path.resolve(__dirname, '../introspection.schema.graphql');
+const schema = fs.readFileSync(
+  path.resolve(__dirname, '../introspection.schema.graphql'),
+  'utf8'
+);
 
 describe('createMockServer', () => {
   it('creates a new mock server', () => {
-    const server = createMockServer({ schemaPath });
+    const server = createMockServer({ schema });
 
     expect(server).toHaveProperty('query');
   });
 
   it('provides an auto-mocked server given the provided schema', async () => {
     const server = createMockServer({
-      schemaPath,
+      schema,
     });
 
     const res = await server.query(
@@ -37,7 +41,7 @@ describe('createMockServer', () => {
 
   it('allows manual mocking of queries when providing a custom mock', async () => {
     const server = createMockServer({
-      schemaPath,
+      schema,
       mocks: {
         Query: () => ({
           todo: () => ({
@@ -74,7 +78,7 @@ describe('createMockServer', () => {
 
   it('preserves auto-mocking when providing manual mocks', async () => {
     const server = createMockServer({
-      schemaPath,
+      schema,
       mocks: {
         Query: () => ({
           todo: () => ({
