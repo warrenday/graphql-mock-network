@@ -20,7 +20,7 @@ GraphQL Mock Network provides:
 
 ## Installing
 
-`npm i graphql-network-mock`
+`npm i graphql-mock-network`
 
 ## Usage Example
 
