@@ -6,14 +6,14 @@ import { setupWorker, Worker } from './utils/setupWorker';
 
 export type MockNetworkArgs = {
   schema: string;
-  mocks: IMocks;
+  mocks?: IMocks;
 };
 
 export class MockNetwork {
   private mockServer: IMockServer;
   private worker: Worker;
   private schema: string;
-  private mocks?: IMocks;
+  private mocks: IMocks;
   private defaultMocks: IMocks;
 
   constructor({ schema, mocks = {} }: MockNetworkArgs) {
@@ -46,7 +46,7 @@ export class MockNetwork {
   }
 
   addMocks(mocks: IMocks) {
-    this.recreateMockServer(mergeMocks([this.mocks || {}, mocks]));
+    this.recreateMockServer(mergeMocks([this.mocks, mocks]));
   }
 
   resetMocks() {
