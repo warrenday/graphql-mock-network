@@ -20,7 +20,7 @@ const wrapTopLevelMock = (mock: Record<string, {}>): IMocks => {
 const mergeResolvers = (resolvers: Record<string, {}>[]) => {
   let topLevelResolvers: { [key: string]: {} } = {};
 
-  resolvers.map(resolver => {
+  resolvers.forEach(resolver => {
     const entries = Object.entries(resolver);
 
     entries.forEach(([key, internalResolvers]) => {
