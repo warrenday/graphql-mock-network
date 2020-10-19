@@ -1,6 +1,6 @@
-import { IMocks, IMockServer } from 'graphql-tools';
+import { IMocks } from 'graphql-tools';
 import { createMockHandler, HandleRequest } from './utils/createMockHandler';
-import { createMockServer } from './createMockServer';
+import { createMockServer, MockServer } from './createMockServer';
 import { mergeMocks } from './utils/mergeMocks';
 import { setupWorker, Worker } from './utils/setupWorker';
 
@@ -10,7 +10,7 @@ export type MockNetworkArgs = {
 };
 
 export class MockNetwork {
-  private mockServer: IMockServer;
+  private mockServer: MockServer;
   private worker: Worker;
   private schema: string;
   private mocks: IMocks;

@@ -11,8 +11,8 @@
     "node": ">=10"
   },
   "scripts": {
-    "start": "tsdx watch",
-    "build": "tdx build",
+    "start": "tsdx watch --transpileOnly",
+    "build": "tsdx build",
     "test": "tsdx test",
     "lint": "tsdx lint",
     "prepare": "tsdx build",
@@ -58,7 +58,7 @@
   },
   "dependencies": {
     "graphql": "^15.3.0",
-    "graphql-tools": "^6.2.4",
+    "graphql-tools": "4.0.8",
     "msw": "^0.21.2"
   }
 }

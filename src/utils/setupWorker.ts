@@ -5,10 +5,15 @@ export type Worker = {
   stop: () => void;
 };
 
-const IS_NODE = typeof window === 'undefined' || typeof process === 'object';
+const IS_BROWSER =
+  typeof process?.versions?.node === 'undefined' &&
+  typeof window !== 'undefined';
 
 export const setupWorker = (handlers: HandlerResponse): Worker => {
-  if (IS_NODE) {
+  if (IS_BROWSER) {
+    const { setupWorker } = require('msw');
+    return setupWorker(handlers);
+  } else {
     const { setupServer } = require('msw/node');
     const server = setupServer(handlers);
 
@@ -16,8 +21,5 @@ export const setupWorker = (handlers: HandlerResponse): Worker => {
       start: () => server.listen(),
       stop: () => server.close(),
     };
-  } else {
-    const { setupWorker } = require('msw');
-    return setupWorker(handlers);
   }
 };
