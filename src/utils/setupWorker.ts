@@ -5,12 +5,8 @@ export type Worker = {
   stop: () => void;
 };
 
-const IS_BROWSER =
-  typeof process?.versions?.node === 'undefined' &&
-  typeof window !== 'undefined';
-
 export const setupWorker = (handlers: HandlerResponse): Worker => {
-  if (IS_BROWSER) {
+  if (process.env.TARGET === 'web') {
     const { setupWorker } = require('msw');
     return setupWorker(handlers);
   } else {
