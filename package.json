@@ -1,5 +1,5 @@
 {
-  "version": "0.7.0",
+  "version": "0.8.0",
   "license": "MIT",
   "main": "dist/node/index.js",
   "browser": "dist/web/index.js",
@@ -11,6 +11,7 @@
   "engines": {
     "node": ">=10"
   },
+  "homepage": "https://github.com/warrenday/graphql-mock-network",
   "scripts": {
     "build": "yarn build:node & yarn build:web & yarn build:types",
     "build:node": "TARGET=node babel src -d dist/node --extensions \".ts\"",
