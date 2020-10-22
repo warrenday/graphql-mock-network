@@ -1,3 +1,4 @@
+import { ExecutionResult } from 'graphql';
 import {
   graphql,
   RequestHandler,
@@ -8,7 +9,7 @@ import {
 export type HandleRequest = (
   query: string,
   variables: Record<string, any>
-) => Promise<{ data?: Record<string, any> | null }>;
+) => Promise<ExecutionResult<{ [key: string]: any }>>;
 
 export type HandlerResponse = RequestHandler<
   GraphQLMockedRequest<Record<string, any>>,
@@ -25,6 +26,10 @@ export const createMockHandler = (
     }
 
     const payload = await handleRequest(body.query, req.variables);
+
+    if (payload.errors) {
+      return res(ctx.errors([...payload.errors]));
+    }
     return res(ctx.data(payload.data));
   });
 

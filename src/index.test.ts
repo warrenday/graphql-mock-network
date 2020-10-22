@@ -8,14 +8,12 @@ const schema = fs.readFileSync(
   'utf8'
 );
 
-const networkRequest = (query: string) => {
+const networkRequest = (query: string, variables: object = { id: 1 }) => {
   return axios.post(
     '/graphql',
     {
       query,
-      variables: {
-        id: 1,
-      },
+      variables,
     },
     {
       headers: { 'Content-Type': 'application/json' },
@@ -48,7 +46,7 @@ describe('MockNetwork', () => {
     mockNetwork.stop();
   });
 
-  it('mocks a request', async () => {
+  it('mocks a query', async () => {
     const res = await networkRequest(`
       query todo($id: ID!) {
         todo(id: $id) {
@@ -66,6 +64,69 @@ describe('MockNetwork', () => {
         },
       },
     });
+  });
+
+  it('mocks a mutation', async () => {
+    mockNetwork.addMocks({
+      Mutation: () => ({
+        createPhoto: () => ({
+          id: '1',
+          title: 'Family Holiday',
+          url: 'http://url.com',
+          thumbnailUrl: 'http://url.com/thumbnail',
+        }),
+      }),
+    });
+
+    const res = await networkRequest(
+      `
+      mutation createPhoto($title: String!, $url: String!, $thumbnailUrl: String!) {
+        createPhoto(input: { title: $title, url: $url, thumbnailUrl: $thumbnailUrl }) {
+          id
+          title
+        }
+      }
+    `,
+      {
+        title: 'Family Holiday',
+        url: 'http://url.com',
+        thumbnailUrl: 'http://url.com/thumbnail',
+      }
+    );
+
+    expect(res.data).toEqual({
+      data: {
+        createPhoto: {
+          id: '1',
+          title: 'Family Holiday',
+        },
+      },
+    });
+  });
+
+  it('mocks an error', async () => {
+    mockNetwork.addMocks({
+      Query: () => ({
+        photo: () => {
+          throw new Error('Oh dear, this is bad');
+        },
+      }),
+    });
+
+    const res = await networkRequest(`
+      query photo($id: ID!) {
+        photo(id: $id) {
+          id
+          title
+        }
+      }
+    `);
+
+    expect(res.data.errors).toHaveLength(1);
+    expect(res.data.errors[0]).toHaveProperty(
+      'message',
+      'Oh dear, this is bad'
+    );
   });
 
   it('adds addition mocks', async () => {
@@ -174,7 +235,7 @@ describe('MockNetwork', () => {
     });
   });
 
-  it('can stop and restart', async () => {
+  it('can stop and restart mockNetwork server', async () => {
     mockNetwork.stop();
 
     await expect(
