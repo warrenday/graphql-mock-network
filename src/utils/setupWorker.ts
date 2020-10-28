@@ -1,7 +1,7 @@
 import { HandlerResponse } from './createMockHandler';
 
 export type Worker = {
-  start: () => void;
+  start: () => Promise<void>;
   stop: () => void;
 };
 

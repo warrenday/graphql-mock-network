@@ -37,7 +37,7 @@ export class MockNetwork {
   };
 
   start() {
-    this.worker.start();
+    return this.worker.start();
   }
 
   stop() {
