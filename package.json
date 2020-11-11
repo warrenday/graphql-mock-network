@@ -18,7 +18,7 @@
     "build:web": "TARGET=web babel src -d dist/web --extensions \".ts\"",
     "build:types": "tsc --project tsconfig.json",
     "test": "jest",
-    "lint": "tsc src/*.ts --noEmit",
+    "lint": "tsc --project tsconfig.lint.json",
     "prepare": "yarn build",
     "clear": "jest --clearCache"
   },
