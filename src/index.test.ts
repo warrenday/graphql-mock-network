@@ -3,6 +3,12 @@ import * as path from 'path';
 import axios from 'axios';
 import { MockNetwork } from './index';
 
+const rejectTimeout = (ms: number) => {
+  return new Promise((_, reject) => {
+    setTimeout(() => reject(new Error('timeout')), ms);
+  });
+};
+
 const schema = fs.readFileSync(
   path.resolve(__dirname, '../introspection.schema.graphql'),
   'utf8'
@@ -239,14 +245,17 @@ describe('MockNetwork', () => {
     mockNetwork.stop();
 
     await expect(
-      networkRequest(`
-        query todo($id: ID!) {
-          todo(id: $id) {
-            id
-            title
+      Promise.race([
+        networkRequest(`
+          query todo($id: ID!) {
+            todo(id: $id) {
+              id
+              title
+            }
           }
-        }
-      `)
+        `),
+        rejectTimeout(4000),
+      ])
     ).rejects.toThrow(Error);
 
     mockNetwork.start();
