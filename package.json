@@ -20,8 +20,6 @@
     "test": "jest",
     "lint": "tsc src/*.ts --noEmit",
     "prepare": "yarn build",
-    "size": "size-limit",
-    "analyze": "size-limit --why",
     "clear": "jest --clearCache"
   },
   "peerDependencies": {},
@@ -66,6 +64,7 @@
     "graphql-scalars": "^1.4.0",
     "graphql-tag": "^2.11.0",
     "husky": "^4.3.0",
+    "jest": "^26.6.3",
     "regenerator-runtime": "^0.13.7",
     "size-limit": "^4.6.0",
     "tslib": "^2.0.3",
