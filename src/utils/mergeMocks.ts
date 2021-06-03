@@ -1,4 +1,4 @@
-import { IMocks } from 'graphql-tools';
+import { IMocks } from '@graphql-tools/mock';
 
 const executeTopLevelMock = (mock: IMocks) => {
   let executedMocks: Record<string, {}> = {};
@@ -20,7 +20,7 @@ const wrapTopLevelMock = (mock: Record<string, {}>): IMocks => {
 const mergeResolvers = (resolvers: Record<string, {}>[]) => {
   let topLevelResolvers: { [key: string]: {} } = {};
 
-  resolvers.forEach(resolver => {
+  resolvers.forEach((resolver) => {
     const entries = Object.entries(resolver);
 
     entries.forEach(([key, internalResolvers]) => {
@@ -35,7 +35,7 @@ const mergeResolvers = (resolvers: Record<string, {}>[]) => {
 };
 
 export const mergeMocks = (mocks: IMocks[]): IMocks => {
-  const topLevelMocks = mocks.map(mock => {
+  const topLevelMocks = mocks.map((mock) => {
     return executeTopLevelMock(mock);
   });
 

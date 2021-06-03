@@ -1,20 +1,12 @@
 import { ExecutionResult } from 'graphql';
-import {
-  graphql,
-  RequestHandler,
-  GraphQLMockedRequest,
-  GraphQLMockedContext,
-} from 'msw';
+import { graphql, GraphQLRequest, GraphQLHandler } from 'msw';
 
 export type HandleRequest = (
   query: string,
   variables: Record<string, any>
 ) => Promise<ExecutionResult<{ [key: string]: any }>>;
 
-export type HandlerResponse = RequestHandler<
-  GraphQLMockedRequest<Record<string, any>>,
-  GraphQLMockedContext<unknown>
->;
+export type HandlerResponse = GraphQLHandler<GraphQLRequest<any>>;
 
 export const createMockHandler = (
   handleRequest: HandleRequest
@@ -30,7 +22,8 @@ export const createMockHandler = (
     if (payload.errors) {
       return res(ctx.errors([...payload.errors]));
     }
-    return res(ctx.data(payload.data));
+
+    return res(ctx.data(payload.data || {}));
   });
 
   return handler;
