@@ -1,4 +1,4 @@
-import { IMocks } from 'graphql-tools';
+import { IMocks } from '@graphql-tools/mock';
 import { createMockHandler, HandleRequest } from './utils/createMockHandler';
 import { createMockServer, MockServer } from './createMockServer';
 import { mergeMocks } from './utils/mergeMocks';

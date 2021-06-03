@@ -3,12 +3,10 @@ import {
   buildClientSchema,
   GraphQLSchema,
   ExecutionResult,
+  IntrospectionQuery,
 } from 'graphql';
-import {
-  IMocks,
-  addMockFunctionsToSchema,
-  makeExecutableSchema,
-} from 'graphql-tools';
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import { IMocks, addMocksToSchema } from '@graphql-tools/mock';
 
 type CreateMockServerArgs = {
   schema: string;
@@ -22,7 +20,7 @@ export type MockServer = {
   ) => Promise<ExecutionResult<{ [key: string]: any }>>;
 };
 
-const getJsonOrString = (jsonOrString: string) => {
+const getJsonOrString = (jsonOrString: string): string | IntrospectionQuery => {
   try {
     return JSON.parse(jsonOrString);
   } catch (e) {
@@ -35,7 +33,6 @@ const getGraphqlSchema = (schemaString: string): GraphQLSchema => {
   if (typeof schema === 'string') {
     return makeExecutableSchema({ typeDefs: schema });
   }
-
   return buildClientSchema(schema);
 };
 
@@ -44,12 +41,12 @@ export const createMockServer = ({
   mocks = {},
 }: CreateMockServerArgs): MockServer => {
   const graphqlSchema = getGraphqlSchema(schema);
-  addMockFunctionsToSchema({ schema: graphqlSchema, mocks });
+  const schemaWithMocks = addMocksToSchema({ schema: graphqlSchema, mocks });
 
   return {
     query: (query, variables) => {
       return graphql({
-        schema: graphqlSchema,
+        schema: schemaWithMocks,
         source: query,
         variableValues: variables,
       });
