@@ -9,7 +9,7 @@
     "src"
   ],
   "engines": {
-    "node": ">=12"
+    "node": ">=10"
   },
   "homepage": "https://github.com/warrenday/graphql-mock-network",
   "scripts": {
