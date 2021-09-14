@@ -1,10 +1,15 @@
 import { IMocks } from '@graphql-tools/mock';
+import { getIsObjectWithFunctions } from './getIsObjectWithFunctions';
 
-const executeTopLevelMock = (mock: IMocks) => {
+const unwrapTopLevelMock = (mock: IMocks) => {
   let executedMocks: Record<string, {}> = {};
   for (let key in mock) {
-    const mockFn: any = mock[key];
-    executedMocks[key] = mockFn();
+    const mockFn = mock[key];
+    if (typeof mockFn === 'function') {
+      executedMocks[key] = mockFn();
+    } else {
+      executedMocks[key] = mockFn as {};
+    }
   }
   return executedMocks;
 };
@@ -23,11 +28,17 @@ const mergeResolvers = (resolvers: Record<string, {}>[]) => {
   resolvers.forEach((resolver) => {
     const entries = Object.entries(resolver);
 
-    entries.forEach(([key, internalResolvers]) => {
-      topLevelResolvers[key] = {
-        ...(topLevelResolvers[key] || {}),
-        ...internalResolvers,
-      };
+    entries.forEach(([key, resolverValue]) => {
+      // getIsObjectWithFunctions helps differentiate between top level mocks or scalars/custom types
+      // Query: { todo: () => {} } | ID: () => 200
+      if (getIsObjectWithFunctions(resolverValue)) {
+        topLevelResolvers[key] = {
+          ...(topLevelResolvers[key] || {}),
+          ...resolverValue,
+        };
+      } else {
+        topLevelResolvers[key] = resolverValue;
+      }
     });
   });
 
@@ -36,7 +47,7 @@ const mergeResolvers = (resolvers: Record<string, {}>[]) => {
 
 export const mergeMocks = (mocks: IMocks[]): IMocks => {
   const topLevelMocks = mocks.map((mock) => {
-    return executeTopLevelMock(mock);
+    return unwrapTopLevelMock(mock);
   });
 
   const mergedResolvers = mergeResolvers(topLevelMocks);

@@ -110,6 +110,35 @@ describe('MockNetwork', () => {
     });
   });
 
+  it('mocks a type/scalar', async () => {
+    mockNetwork.addMocks({
+      ID: () => '200',
+      Query: () => ({
+        todo: () => ({
+          title: 'I am a manually mocked todo!',
+        }),
+      }),
+    });
+
+    const res = await networkRequest(`
+      query todo($id: ID!) {
+        todo(id: $id) {
+          id
+          title
+        }
+      }
+    `);
+
+    expect(res.data).toEqual({
+      data: {
+        todo: {
+          id: '200',
+          title: 'I am a manually mocked todo!',
+        },
+      },
+    });
+  });
+
   it('mocks an error', async () => {
     mockNetwork.addMocks({
       Query: () => ({

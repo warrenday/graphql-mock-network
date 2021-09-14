@@ -4,9 +4,14 @@ import { createMockServer, MockServer } from './createMockServer';
 import { mergeMocks } from './utils/mergeMocks';
 import { setupWorker, Worker } from './utils/setupWorker';
 
+type CommonMocks = {
+  Query?: {};
+  Mutation?: {};
+};
+
 export type MockNetworkArgs = {
   schema: string;
-  mocks?: IMocks;
+  mocks?: IMocks & CommonMocks;
 };
 
 export class MockNetwork {
