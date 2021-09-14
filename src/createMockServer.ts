@@ -41,7 +41,10 @@ export const createMockServer = ({
   mocks = {},
 }: CreateMockServerArgs): MockServer => {
   const graphqlSchema = getGraphqlSchema(schema);
-  const schemaWithMocks = addMocksToSchema({ schema: graphqlSchema, mocks });
+  const schemaWithMocks = addMocksToSchema({
+    schema: graphqlSchema,
+    mocks,
+  });
 
   return {
     query: (query, variables) => {
