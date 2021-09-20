@@ -30,12 +30,12 @@ const networkRequest = (query: string, variables: object = { id: 1 }) => {
 const mockNetwork = new MockNetwork({
   schema,
   mocks: {
-    Query: () => ({
+    Query: {
       todo: () => ({
         id: 'xyz',
         title: 'I am a manually mocked todo!',
       }),
-    }),
+    },
   },
 });
 

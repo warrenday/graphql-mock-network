@@ -6,7 +6,7 @@ import {
   IntrospectionQuery,
 } from 'graphql';
 import { makeExecutableSchema } from '@graphql-tools/schema';
-import { IMocks, addMocksToSchema } from '@graphql-tools/mock';
+import { addMocksToSchema, IMocks } from '@graphql-tools/mock';
 
 type CreateMockServerArgs = {
   schema: string;

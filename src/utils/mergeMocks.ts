@@ -1,7 +1,8 @@
-import { IMocks } from '@graphql-tools/mock';
+import { IMockFn, IMocks } from '@graphql-tools/mock';
+import { IGraphqlMocks } from '../types';
 import { getIsObjectWithFunctions } from './getIsObjectWithFunctions';
 
-const unwrapTopLevelMock = (mock: IMocks) => {
+const unwrapTopLevelMock = (mock: IGraphqlMocks) => {
   let executedMocks: Record<string, {}> = {};
   for (let key in mock) {
     const mockFn = mock[key];
@@ -14,10 +15,14 @@ const unwrapTopLevelMock = (mock: IMocks) => {
   return executedMocks;
 };
 
-const wrapTopLevelMock = (mock: Record<string, {}>): IMocks => {
+export const wrapTopLevelMock = (mock: IGraphqlMocks): IMocks => {
   let wrappedMock: IMocks = {};
   for (let key in mock) {
-    wrappedMock[key] = () => mock[key];
+    if (typeof mock[key] === 'function') {
+      wrappedMock[key] = mock[key] as IMockFn;
+    } else {
+      wrappedMock[key] = () => mock[key];
+    }
   }
   return wrappedMock;
 };
@@ -45,7 +50,7 @@ const mergeResolvers = (resolvers: Record<string, {}>[]) => {
   return topLevelResolvers;
 };
 
-export const mergeMocks = (mocks: IMocks[]): IMocks => {
+export const mergeMocks = (mocks: IGraphqlMocks[]): IMocks => {
   const topLevelMocks = mocks.map((mock) => {
     return unwrapTopLevelMock(mock);
   });

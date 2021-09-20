@@ -108,4 +108,38 @@ describe('createMockServer', () => {
     expect(typeof res.data?.photo?.id).toBe('string');
     expect(typeof res.data?.photo?.title).toBe('string');
   });
+
+  it('provided query arguments to a mock', async () => {
+    const mockArgs = jest.fn();
+    const server = createMockServer({
+      schema,
+      mocks: {
+        Query: () => ({
+          todo: (args: {}) => {
+            mockArgs(args);
+            return {
+              id: 'xyz',
+              title: 'I am manually mocked!',
+            };
+          },
+        }),
+      },
+    });
+
+    await server.query(
+      `
+      query todo($id: ID!) {
+        todo(id: $id) {
+          id
+          title
+        }
+      }
+    `,
+      {
+        id: 'some-id',
+      }
+    );
+
+    expect(mockArgs).toHaveBeenCalledWith({ id: 'some-id' });
+  });
 });
