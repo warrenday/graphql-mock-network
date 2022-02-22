@@ -31,12 +31,12 @@ import schema from './introspection.schema.graphql';
 const mockNetwork = new MockNetwork({
   schema,
   mocks: {
-    Query: () => ({
+    Query: {
       todo: () => ({
         id: 'xyz',
         title: 'I am a manually mocked todo!',
       }),
-    }),
+    },
   },
 });
 
@@ -92,12 +92,12 @@ Create a new instance of MockNetwork which takes your graphql schema and some in
 const mockNetwork = new MockNetwork({
   schema,
   mocks: {
-    Query: () => ({
+    Query: {
       todo: () => ({
         id: 'xyz',
         title: 'I am a manually mocked todo!',
       }),
-    }),
+    },
   },
 });
 ```
@@ -124,12 +124,12 @@ Add or replace a new or existing mock.
 
 ```ts
 mockNetwork.addMocks({
-  Query: () => ({
+  Query: {
     photo: () => ({
       id: 'abc',
       title: 'I am a manually mocked photo!',
     }),
-  }),
+  },
 });
 ```
 

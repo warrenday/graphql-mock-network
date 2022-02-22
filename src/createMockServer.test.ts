@@ -43,12 +43,12 @@ describe('createMockServer', () => {
     const server = createMockServer({
       schema,
       mocks: {
-        Query: () => ({
+        Query: {
           todo: () => ({
             id: 'xyz',
             title: 'I am manually mocked!',
           }),
-        }),
+        },
       },
     });
 
@@ -80,12 +80,12 @@ describe('createMockServer', () => {
     const server = createMockServer({
       schema,
       mocks: {
-        Query: () => ({
+        Query: {
           todo: () => ({
             id: 'xyz',
             title: 'I am manually mocked!',
           }),
-        }),
+        },
       },
     });
 
@@ -114,15 +114,15 @@ describe('createMockServer', () => {
     const server = createMockServer({
       schema,
       mocks: {
-        Query: () => ({
-          todo: (args: {}) => {
+        Query: {
+          todo: (_: any, args: {}) => {
             mockArgs(args);
             return {
               id: 'xyz',
               title: 'I am manually mocked!',
             };
           },
-        }),
+        },
       },
     });
 
@@ -148,11 +148,11 @@ describe('createMockServer', () => {
       schema,
       mocks: {
         ID: () => 'MOCKED_ID_SCALAR',
-        Query: () => ({
+        Query: {
           todos: () => ({
             data: [{ id: '123' }, {}, { id: '456' }],
           }),
-        }),
+        },
       },
     });
 

@@ -1,18 +1,13 @@
+import { IMocks } from '@graphql-tools/mock';
 import { createMockHandler, HandleRequest } from './utils/createMockHandler';
 import { createMockServer, MockServer } from './createMockServer';
-import { mergeMocks, wrapTopLevelMock } from './utils/mergeMocks';
+import { mergeMocks } from './utils/mergeMocks';
 import { setupWorker, Worker } from './utils/setupWorker';
-import { IGraphqlMocks } from './types';
-import { IMocks } from '@graphql-tools/mock';
-
-type CommonMocks = {
-  Query?: {};
-  Mutation?: {};
-};
+import { DefaultMocks } from './types';
 
 export type MockNetworkArgs = {
   schema: string;
-  mocks?: IGraphqlMocks & CommonMocks;
+  mocks?: DefaultMocks;
 };
 
 export class MockNetwork {
@@ -23,7 +18,7 @@ export class MockNetwork {
   private defaultMocks: IMocks;
 
   constructor({ schema, mocks: initialMocks = {} }: MockNetworkArgs) {
-    const mocks = wrapTopLevelMock(initialMocks);
+    const mocks = initialMocks;
     this.mockServer = createMockServer({ schema, mocks });
     this.defaultMocks = mocks;
     this.mocks = mocks;
@@ -52,7 +47,7 @@ export class MockNetwork {
     this.worker = setupWorker(createMockHandler(this.handleRequest));
   }
 
-  addMocks(mocks: IGraphqlMocks) {
+  addMocks(mocks: IMocks) {
     this.recreateMockServer(mergeMocks([this.mocks, mocks]));
   }
 

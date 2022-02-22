@@ -6,11 +6,12 @@ import {
   IntrospectionQuery,
 } from 'graphql';
 import { makeExecutableSchema } from '@graphql-tools/schema';
-import { addMocksToSchema, IMocks } from '@graphql-tools/mock';
+import { addMocksToSchema } from '@graphql-tools/mock';
+import { DefaultMocks } from './types';
 
 type CreateMockServerArgs = {
   schema: string;
-  mocks?: IMocks;
+  mocks?: DefaultMocks;
 };
 
 export type MockServer = {
@@ -40,10 +41,18 @@ export const createMockServer = ({
   schema,
   mocks = {},
 }: CreateMockServerArgs): MockServer => {
+  // Apply Query and Mutation to resolvers so they have access
+  // to query args. Apply the rest (Scalars) as general mocks.
+  const { Query = {}, Mutation = {}, ...rest } = mocks;
+
   const graphqlSchema = getGraphqlSchema(schema);
   const schemaWithMocks = addMocksToSchema({
     schema: graphqlSchema,
-    mocks,
+    mocks: rest,
+    resolvers: {
+      Query,
+      Mutation,
+    },
   });
 
   return {
