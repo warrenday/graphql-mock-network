@@ -139,6 +139,36 @@ describe('MockNetwork', () => {
     });
   });
 
+  it('mocks an array', async () => {
+    mockNetwork.addMocks({
+      ID: () => 'ID_MOCKED',
+      Query: () => ({
+        todos: () => ({
+          data: [{ id: '123' }],
+        }),
+      }),
+    });
+
+    const res = await networkRequest(`
+      query todos {
+        todos {
+          data {
+            id
+            title
+          }
+        }
+      }
+    `);
+
+    expect(res.data).toEqual({
+      data: {
+        todos: {
+          data: [{ id: '123', title: expect.any(String) }],
+        },
+      },
+    });
+  });
+
   it('mocks an error', async () => {
     mockNetwork.addMocks({
       Query: () => ({
