@@ -43,12 +43,12 @@ describe('createMockServer', () => {
     const server = createMockServer({
       schema,
       mocks: {
-        Query: () => ({
+        Query: {
           todo: () => ({
             id: 'xyz',
             title: 'I am manually mocked!',
           }),
-        }),
+        },
       },
     });
 
@@ -80,12 +80,12 @@ describe('createMockServer', () => {
     const server = createMockServer({
       schema,
       mocks: {
-        Query: () => ({
+        Query: {
           todo: () => ({
             id: 'xyz',
             title: 'I am manually mocked!',
           }),
-        }),
+        },
       },
     });
 
@@ -114,15 +114,15 @@ describe('createMockServer', () => {
     const server = createMockServer({
       schema,
       mocks: {
-        Query: () => ({
-          todo: (args: {}) => {
+        Query: {
+          todo: (_: any, args: {}) => {
             mockArgs(args);
             return {
               id: 'xyz',
               title: 'I am manually mocked!',
             };
           },
-        }),
+        },
       },
     });
 
@@ -141,5 +141,40 @@ describe('createMockServer', () => {
     );
 
     expect(mockArgs).toHaveBeenCalledWith({ id: 'some-id' });
+  });
+
+  it('applies mocked scalars only when fields are not mocked', async () => {
+    const server = createMockServer({
+      schema,
+      mocks: {
+        ID: () => 'MOCKED_ID_SCALAR',
+        Query: {
+          todos: () => ({
+            data: [{ id: '123' }, {}, { id: '456' }],
+          }),
+        },
+      },
+    });
+
+    const res = await server.query(
+      `
+      query todos {
+        todos {
+          data {
+            id
+          }
+        }
+      }
+    `,
+      {
+        id: 1,
+      }
+    );
+
+    expect(res.data).toEqual({
+      todos: {
+        data: [{ id: '123' }, { id: 'MOCKED_ID_SCALAR' }, { id: '456' }],
+      },
+    });
   });
 });

@@ -74,14 +74,14 @@ describe('MockNetwork', () => {
 
   it('mocks a mutation', async () => {
     mockNetwork.addMocks({
-      Mutation: () => ({
+      Mutation: {
         createPhoto: () => ({
           id: '1',
           title: 'Family Holiday',
           url: 'http://url.com',
           thumbnailUrl: 'http://url.com/thumbnail',
         }),
-      }),
+      },
     });
 
     const res = await networkRequest(
@@ -113,11 +113,11 @@ describe('MockNetwork', () => {
   it('mocks a type/scalar', async () => {
     mockNetwork.addMocks({
       ID: () => '200',
-      Query: () => ({
+      Query: {
         todo: () => ({
           title: 'I am a manually mocked todo!',
         }),
-      }),
+      },
     });
 
     const res = await networkRequest(`
@@ -139,13 +139,43 @@ describe('MockNetwork', () => {
     });
   });
 
+  it('mocks an array', async () => {
+    mockNetwork.addMocks({
+      ID: () => 'ID_MOCKED',
+      Query: {
+        todos: () => ({
+          data: [{ id: '123' }],
+        }),
+      },
+    });
+
+    const res = await networkRequest(`
+      query todos {
+        todos {
+          data {
+            id
+            title
+          }
+        }
+      }
+    `);
+
+    expect(res.data).toEqual({
+      data: {
+        todos: {
+          data: [{ id: '123', title: expect.any(String) }],
+        },
+      },
+    });
+  });
+
   it('mocks an error', async () => {
     mockNetwork.addMocks({
-      Query: () => ({
+      Query: {
         photo: () => {
           throw new Error('Oh dear, this is bad');
         },
-      }),
+      },
     });
 
     const res = await networkRequest(`
@@ -166,12 +196,12 @@ describe('MockNetwork', () => {
 
   it('adds addition mocks', async () => {
     mockNetwork.addMocks({
-      Query: () => ({
+      Query: {
         photo: () => ({
           id: 'abc',
           title: 'I am a manually mocked photo!',
         }),
-      }),
+      },
     });
 
     const res = await networkRequest(`
@@ -195,12 +225,12 @@ describe('MockNetwork', () => {
 
   it('preserves previous mocks when adding new mocks', async () => {
     mockNetwork.addMocks({
-      Query: () => ({
+      Query: {
         photo: () => ({
           id: 'abc',
           title: 'I am a manually mocked photo!',
         }),
-      }),
+      },
     });
 
     const res = await networkRequest(`
@@ -224,12 +254,12 @@ describe('MockNetwork', () => {
 
   it('resets mocks back to state when originally instantiated', async () => {
     mockNetwork.addMocks({
-      Query: () => ({
+      Query: {
         photo: () => ({
           id: 'abc',
           title: 'I am a manually mocked photo!',
         }),
-      }),
+      },
     });
     mockNetwork.resetMocks();
 
