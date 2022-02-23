@@ -3,11 +3,13 @@ import { createMockHandler, HandleRequest } from './utils/createMockHandler';
 import { createMockServer, MockServer } from './createMockServer';
 import { mergeMocks } from './utils/mergeMocks';
 import { setupWorker, Worker } from './utils/setupWorker';
-import { DefaultMocks } from './types';
+import { IMockPayload } from './types';
+
+export { IMockPayload };
 
 export type MockNetworkArgs = {
   schema: string;
-  mocks?: DefaultMocks;
+  mocks?: IMockPayload;
 };
 
 export class MockNetwork {

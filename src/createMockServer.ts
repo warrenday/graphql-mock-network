@@ -7,11 +7,11 @@ import {
 } from 'graphql';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { addMocksToSchema } from '@graphql-tools/mock';
-import { DefaultMocks } from './types';
+import { IMockPayload } from './types';
 
 type CreateMockServerArgs = {
   schema: string;
-  mocks?: DefaultMocks;
+  mocks?: IMockPayload;
 };
 
 export type MockServer = {

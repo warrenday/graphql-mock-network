@@ -1,8 +1,15 @@
-import { IMocks } from '@graphql-tools/mock';
+import { IMocks, IMockStore } from '@graphql-tools/mock';
 
-type CommonMocks = {
-  Query?: {};
-  Mutation?: {};
-};
+type IMockResolver = (
+  store: IMockStore,
+  args: Record<string, unknown>
+) => unknown;
 
-export type DefaultMocks = IMocks & CommonMocks;
+export interface IMockPayload extends IMocks {
+  Query?: {
+    [key: string]: IMockResolver;
+  };
+  Mutation?: {
+    [key: string]: IMockResolver;
+  };
+}
