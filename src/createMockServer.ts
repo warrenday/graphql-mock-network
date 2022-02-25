@@ -37,22 +37,30 @@ const getGraphqlSchema = (schemaString: string): GraphQLSchema => {
   return buildClientSchema(schema);
 };
 
+const extractResolvers = (mocks: IMockPayload) => {
+  let resolvers: Record<string, {}> = {};
+  for (const key in mocks) {
+    const mock = mocks[key];
+    if (typeof mock === 'object' && mock !== null) {
+      resolvers[key] = mock;
+    }
+  }
+  return resolvers;
+};
+
 export const createMockServer = ({
   schema,
   mocks = {},
 }: CreateMockServerArgs): MockServer => {
   // Apply Query and Mutation to resolvers so they have access
   // to query args. Apply the rest (Scalars) as general mocks.
-  const { Query = {}, Mutation = {}, ...rest } = mocks;
+  const resolvers = extractResolvers(mocks);
 
   const graphqlSchema = getGraphqlSchema(schema);
   const schemaWithMocks = addMocksToSchema({
     schema: graphqlSchema,
-    mocks: rest,
-    resolvers: {
-      Query,
-      Mutation,
-    },
+    mocks: mocks,
+    resolvers,
   });
 
   return {
