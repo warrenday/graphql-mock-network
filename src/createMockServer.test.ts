@@ -109,7 +109,7 @@ describe('createMockServer', () => {
     expect(typeof res.data?.photo?.title).toBe('string');
   });
 
-  it('provided query arguments to a mock', async () => {
+  it('applies query arguments to a mock', async () => {
     const mockArgs = jest.fn();
     const server = createMockServer({
       schema,
@@ -141,6 +141,52 @@ describe('createMockServer', () => {
     );
 
     expect(mockArgs).toHaveBeenCalledWith({ id: 'some-id' });
+  });
+
+  it('applies query arguments to a mock when nested queries used', async () => {
+    const mockArgs = jest.fn();
+    const mockNestedArgs = jest.fn();
+    const server = createMockServer({
+      schema,
+      mocks: {
+        Query: {
+          todo: (_: any, args: {}) => {
+            mockArgs(args);
+            return {
+              id: 'xyz',
+              title: 'I am manually mocked!',
+              user: (nestedArgs: {}) => {
+                mockNestedArgs(nestedArgs);
+                return {
+                  id: 'some-user-id',
+                };
+              },
+            };
+          },
+        },
+      },
+    });
+
+    await server.query(
+      `
+      query todo($id: ID!, $userId: String) {
+        todo(id: $id) {
+          id
+          title
+          user(id: $userId) {
+            id
+          }
+        }
+      }
+    `,
+      {
+        id: 'some-id',
+        userId: 'some-user-id',
+      }
+    );
+
+    expect(mockArgs).toHaveBeenCalledWith({ id: 'some-id' });
+    expect(mockNestedArgs).toHaveBeenCalledWith({ id: 'some-user-id' });
   });
 
   it('applies mocked scalars only when fields are not mocked', async () => {

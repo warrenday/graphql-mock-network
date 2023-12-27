@@ -237,7 +237,7 @@ type Todo {
   id: ID
   title: String
   completed: Boolean
-  user: User
+  user(id: String): User
 }
 
 type TodosPage {
