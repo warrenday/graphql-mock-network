@@ -211,6 +211,8 @@ type Query {
   todo(id: ID!): Todo
   users(options: PageQueryOptions): UsersPage
   user(id: ID!): User
+  pets(options: PageQueryOptions): PetsPage
+  pet(id: ID!): Pet
 }
 
 input SearchOptions {
@@ -231,6 +233,26 @@ input SortOptions {
 enum SortOrderEnum {
   ASC
   DESC
+}
+
+type Dog {
+  id: ID
+  name: String
+  breed: String
+}
+
+type Cat {
+  id: ID
+  name: String
+  color: String
+}
+
+union Pet = Dog | Cat
+
+type PetsPage {
+  data: [Pet]
+  links: PaginationLinks
+  meta: PageMetadata
 }
 
 type Todo {

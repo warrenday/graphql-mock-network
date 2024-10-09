@@ -22,7 +22,6 @@
     "prepare": "yarn build",
     "clear": "jest --clearCache"
   },
-  "peerDependencies": {},
   "husky": {
     "hooks": {
       "pre-commit": "yarn lint"
