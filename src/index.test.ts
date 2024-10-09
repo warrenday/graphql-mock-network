@@ -215,6 +215,56 @@ describe('MockNetwork', () => {
     });
   });
 
+  it('mocks a fragment with a union', async () => {
+    mockNetwork.addMocks({
+      Query: {
+        pets: () => ({
+          data: [
+            { id: '123', name: 'Indy', breed: 'Dachshund', __typename: 'Dog' },
+            { id: '123', name: 'Milo', color: 'Blue', __typename: 'Cat' },
+          ],
+        }),
+      },
+      Pet: {
+        __resolveType: (obj: any) => obj.__typename,
+      },
+    });
+
+    const res = await networkRequest(`
+      fragment PetPageFragment on PetsPage {
+        data {
+          ... on Dog {
+            id
+            name
+            breed
+          }
+          ... on Cat {
+            id
+            name
+            color
+          }
+        }
+      }
+
+      query pets {
+        pets {
+          ...PetPageFragment
+        }
+      }
+    `);
+
+    expect(res.data).toEqual({
+      data: {
+        pets: {
+          data: [
+            { id: '123', name: 'Indy', breed: 'Dachshund' },
+            { id: '123', name: 'Milo', color: 'Blue' },
+          ],
+        },
+      },
+    });
+  });
+
   it('mocks an error', async () => {
     mockNetwork.addMocks({
       Query: {
